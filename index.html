@@ -39,13 +39,18 @@
       type="text/javascript"
       src="https://npmcdn.com/preact-portal"
     ></script>
-
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/pdfmake.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/vfs_fonts.js"></script>
     <script
       src="app.js"
       type="text/jsx"
       data-presets="es2017,react,stage-0"
       data-plugins="transform-decorators-legacy"
-    ></script>
+    >
+    import * as pdfMake from 'pdfmake/build/pdfmake';
+    import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  </script>
   </head>
   <body></body>
 </html>

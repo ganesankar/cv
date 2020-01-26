@@ -89,6 +89,7 @@ class App extends Component {
     super(props);
     this.state = {
       contentdata: [],
+      cvdata:[],
       loading:true,
       credits: [
         {
@@ -106,7 +107,63 @@ class App extends Component {
           link: "https://babeljs.io/",
           desc: "JavaScript compiler"
         }
-      ]
+      ],
+      documentDefinition : {
+        pageSize: "A4",
+        pageOrientation: "potrait",
+        defaultStyle: {
+          fontSize: 10,
+          lineHeight: 1.2
+        },
+        content: 
+        [
+          {
+            table: 
+            {
+              headerRows: 1,
+              widths: [ '*', '*', '*', '*' ],
+              body: [
+                [
+                  { text: 'Header 1', style: 'tableHeader' }, 
+                  { text: 'Header 2', style: 'tableHeader' }, 
+                    { text: 'Header 3', style: 'tableHeader' }
+                ],
+                [
+                  { text: 'Hello' }, 
+                  { text: 'I' }, 
+                  { text: 'am' }
+                ],
+                [
+                  { text: 'a' }, 
+                  { text: 'table' }, 
+                  { text: '.' }
+                ]
+              ]
+            }
+          },
+          {
+            text: 'pdfmake', style: 'header' 
+          },
+          'pdfmake does not generate pdfs from the html. Rather, it generates them directly from javascript.',
+          'It is very fast, but very limited, especially compared to PHP alternatives.',
+          'To get a pdf that looks like the page, you could use html2canvas, which generates an image that can be inserted into the pdf. I think this is a hack and not ideal',
+        ],
+        styles: 
+        {
+          header: 
+          {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 10, 0, 10],
+            alignment: 'center'
+          },
+          tableHeader: 
+          {
+            fillColor: '#4CAF50',
+            color: 'white'
+          }
+        }
+      }
     };
   }
   componentDidMount() {
@@ -117,10 +174,23 @@ class App extends Component {
         data.forEach(function(item, index) {
           contentdata.push(item.data);
         });
-
+        
         this.setState({ contentdata , loading : false});
+        fetch("https://ganesan-cv-reactjs.netlify.com/.netlify/functions/cv-all")
+        .then(response => response.json())
+        .then(data1 => {
+          const cvdata = [];
+          data1.forEach(function(item1) {
+            cvdata.push(item1.data);
+          });
+          console.log(cvdata)
+          this.setState({ cvdata  });
+        });
       });
   }
+  downloadPdf = e => {
+    pdfMake.createPdf(this.state.ocumentDefinition).download();
+  };
   render() {
     return (
       <div>
@@ -140,6 +210,9 @@ class App extends Component {
           </div>
           <div class="container base">
           {this.state.loading && <div class="text-center "> <div class="spinner"></div></div>}
+          {this.state.cvdata && <div class="text-center "> 
+          <button class="primary"  onClick={this.downloadPdf}>Primary</button>
+          </div>}
             <Card data={this.state.contentdata} />
           </div>
           <div class="row">
