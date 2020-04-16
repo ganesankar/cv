@@ -167,7 +167,7 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    fetch("https://ganesan-cv-reactjs.netlify.com/.netlify/functions/cv-list")
+    fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-list")
       .then(response => response.json())
       .then(data => {
         const contentdata = [];
