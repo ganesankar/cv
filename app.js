@@ -176,7 +176,7 @@ class App extends Component {
         });
         
         this.setState({ contentdata , loading : false});
-        fetch("https://ganesan-cv-reactjs.netlify.com/.netlify/functions/cv-all")
+        fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-all")
         .then(response => response.json())
         .then(data1 => {
           const cvdata = [];
