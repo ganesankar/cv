@@ -33,7 +33,7 @@ class Card extends Component {
                       <li>
                         <a href={item.git} target="_blank">
                           {" "}
-                          <i class="fab fa-github"></i>
+                          <i class="fab fa-github" style={{  "color": item.color ? item.color : "#ffffff"}}></i>
                         </a>
                       </li>
                     </ul>
