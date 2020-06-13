@@ -17,6 +17,7 @@ class Card extends Component {
                   class="wrapper"
                   style={{
                     "background-color": item.bgr,
+                    "color": item.color ? item.color : "#ffffff",
                     "background-image": item.img
                   }}
                 >
