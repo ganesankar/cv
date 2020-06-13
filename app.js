@@ -212,7 +212,7 @@ class App extends Component {
           <div class="container base">
           {this.state.loading && <div class="text-center "> <div class="spinner"></div></div>}
           {this.state.cvdata && <div class="text-center "> 
-          <button class="primary"  onClick={this.downloadPdf}>Primary</button>
+          <button class="primary"  onClick={this.downloadPdf}> <i class="fas fa-cloud-download-alt"></i> DOWNLOAD PDF</button>
           </div>}
             <Card data={this.state.contentdata} />
           </div>
