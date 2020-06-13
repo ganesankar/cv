@@ -154,8 +154,8 @@ mark.day {
   font-size: 12px;
 }
 
-a {
-  color: #fff !important;
+a, a:link, a:visited {
+  color: inherit;
   font-weight: 500;
 }
 
