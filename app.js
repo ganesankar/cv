@@ -17,6 +17,7 @@ class Card extends Component {
                   class="wrapper"
                   style={{
                     "background-color": item.bgr,
+                    "color": item.color ? item.color : "#ffffff",
                     "background-image": item.img
                   }}
                 >
@@ -32,7 +33,7 @@ class Card extends Component {
                       <li>
                         <a href={item.git} target="_blank">
                           {" "}
-                          <i class="fab fa-github"></i>
+                          <i class="fab fa-github" style={{  "color": item.color ? item.color : "#ffffff"}}></i>
                         </a>
                       </li>
                     </ul>
@@ -167,7 +168,7 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    fetch("https://ganesan-cv-reactjs.netlify.com/.netlify/functions/cv-list")
+    fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-list")
       .then(response => response.json())
       .then(data => {
         const contentdata = [];
@@ -176,7 +177,7 @@ class App extends Component {
         });
         
         this.setState({ contentdata , loading : false});
-        fetch("https://ganesan-cv-reactjs.netlify.com/.netlify/functions/cv-all")
+        fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-all")
         .then(response => response.json())
         .then(data1 => {
           const cvdata = [];
@@ -211,7 +212,7 @@ class App extends Component {
           <div class="container base">
           {this.state.loading && <div class="text-center "> <div class="spinner"></div></div>}
           {this.state.cvdata && <div class="text-center "> 
-          <button class="primary"  onClick={this.downloadPdf}>Primary</button>
+          <a class="primary"  href="https://ganesankar.github.io/cv/media/GanesanKaruppaiya.pdf" target="_blank"> <i class="fas fa-cloud-download-alt"></i> DOWNLOAD PDF</a>
           </div>}
             <Card data={this.state.contentdata} />
           </div>
