@@ -5,27 +5,31 @@ const Portal = preactPortal;
 
 // we want to render this component elsewhere in the DOM
 class Card extends Component {
+
+  createMarkup(v) {
+    return {__html: v};
+  }
   render(props) {
     return (
       <div class="row">
         {props.data &&
           props.data.length > 0 &&
-          props.data.map(item => (
+          props.data.map((item, index) => (
             <div class="col-sm-12 col-md-6 col-lg-4">
               <div class="preCard preCard">
                 <div
                   class="wrapper"
                   style={{
                     "background-color": item.bgr,
-                    "color": item.color ? item.color : "#ffffff",
-                    "background-image": item.img
+                    color: item.color ? item.color : "#ffffff",
+                    "background-image": item.img,
                   }}
                 >
                   <div class="header">
                     <div class="date">
                       {item.tags &&
                         item.tags.length > 0 &&
-                        item.tags.map(itemh => (
+                        item.tags.map((itemh) => (
                           <mark class="day">{itemh}</mark>
                         ))}
                     </div>
@@ -33,7 +37,12 @@ class Card extends Component {
                       <li>
                         <a href={item.git} target="_blank">
                           {" "}
-                          <i class="fab fa-github" style={{  "color": item.color ? item.color : "#ffffff"}}></i>
+                          <i
+                            class="lab la-github"
+                            style={{
+                              color: item.color ? item.color : "#ffffff",
+                            }}
+                          ></i>
                         </a>
                       </li>
                     </ul>
@@ -44,19 +53,25 @@ class Card extends Component {
                     class="data"
                     style={{
                       background:
-                        "linear-gradient(0deg, { item.bgr } 0%,  { item.bgr } 100%)"
+                        "linear-gradient(0deg, { item.bgr } 0%,  { item.bgr } 100%)",
                     }}
                   >
                     <div class="content">
                       <span class="author"> </span>
                       <h2 class="title">
-                        <a href="#">{item.name}</a>
+                        <a href={item.link} target="_blank">
+                          {item.name}
+                        </a>
                       </h2>
-                      <p class="text">{item.desc}</p>
+                      
+                      <div class="text" dangerouslySetInnerHTML={this.createMarkup(item.desc)} />
                       <a href={item.link} target="_blank" class="button">
-                        {" "}
+                        <i class="las la-external-link-alt"></i>
                         VIEW
                       </a>
+                      <button class="inverse" onClick={() => this.props.toggleStory(index)} ><i class="las la-external-link-alt"></i>
+                        Read Story</button>
+                   
                     </div>
                   </div>
                 </div>
@@ -73,15 +88,32 @@ class Credits extends Component {
       <ol>
         {props.data &&
           props.data.length > 0 &&
-          props.data.map(item => (
+          props.data.map((item) => (
             <li>
               <a href={item.link} target="_blank">
                 <mark class="tag">{item.name}</mark>
               </a>
-               {item.desc}
+              {item.desc}
             </li>
           ))}
       </ol>
+    );
+  }
+}
+class StoryBoard extends Component {
+
+  createMarkup(v) {
+    return {__html: v};
+  }
+  render(props) {
+    return (
+      <div>
+        <b class={`screen-overlay ${props.visible ? 'show' : ''}`}  onClick={() => this.props.toggleStory(0)}></b>
+
+        <aside class= {`offcanvas ${props.visible ? 'show' : ''}`} id="my_offcanvas1">
+          <div dangerouslySetInnerHTML={this.createMarkup(props.data)} />
+        </aside>
+      </div>
     );
   }
 }
@@ -90,108 +122,98 @@ class App extends Component {
     super(props);
     this.state = {
       contentdata: [],
-      cvdata:[],
-      loading:true,
+      cvdata: [],
+      loading: true,
       credits: [
         {
           name: "preactjs",
           link: "https://preactjs.com",
-          desc: "Fast 3kB alternative to React"
+          desc: "Fast 3kB alternative to React",
         },
         {
           name: "minicss",
           link: "https://minicss.org/",
-          desc: "minimal, responsive, style-agnostic CSS framework,"
+          desc: "minimal, responsive, style-agnostic CSS framework,",
         },
         {
           name: "babeljs",
           link: "https://babeljs.io/",
-          desc: "JavaScript compiler"
-        }
+          desc: "JavaScript compiler",
+        },
       ],
-      documentDefinition : {
+      documentDefinition: {
         pageSize: "A4",
         pageOrientation: "potrait",
         defaultStyle: {
           fontSize: 10,
-          lineHeight: 1.2
+          lineHeight: 1.2,
         },
-        content: 
-        [
+        content: [
           {
-            table: 
-            {
+            table: {
               headerRows: 1,
-              widths: [ '*', '*', '*', '*' ],
+              widths: ["*", "*", "*", "*"],
               body: [
                 [
-                  { text: 'Header 1', style: 'tableHeader' }, 
-                  { text: 'Header 2', style: 'tableHeader' }, 
-                    { text: 'Header 3', style: 'tableHeader' }
+                  { text: "Header 1", style: "tableHeader" },
+                  { text: "Header 2", style: "tableHeader" },
+                  { text: "Header 3", style: "tableHeader" },
                 ],
-                [
-                  { text: 'Hello' }, 
-                  { text: 'I' }, 
-                  { text: 'am' }
-                ],
-                [
-                  { text: 'a' }, 
-                  { text: 'table' }, 
-                  { text: '.' }
-                ]
-              ]
-            }
+                [{ text: "Hello" }, { text: "I" }, { text: "am" }],
+                [{ text: "a" }, { text: "table" }, { text: "." }],
+              ],
+            },
           },
           {
-            text: 'pdfmake', style: 'header' 
+            text: "pdfmake",
+            style: "header",
           },
-          'pdfmake does not generate pdfs from the html. Rather, it generates them directly from javascript.',
-          'It is very fast, but very limited, especially compared to PHP alternatives.',
-          'To get a pdf that looks like the page, you could use html2canvas, which generates an image that can be inserted into the pdf. I think this is a hack and not ideal',
+          "pdfmake does not generate pdfs from the html. Rather, it generates them directly from javascript.",
+          "It is very fast, but very limited, especially compared to PHP alternatives.",
+          "To get a pdf that looks like the page, you could use html2canvas, which generates an image that can be inserted into the pdf. I think this is a hack and not ideal",
         ],
-        styles: 
-        {
-          header: 
-          {
+        styles: {
+          header: {
             fontSize: 18,
             bold: true,
             margin: [0, 10, 0, 10],
-            alignment: 'center'
+            alignment: "center",
           },
-          tableHeader: 
-          {
-            fillColor: '#4CAF50',
-            color: 'white'
-          }
-        }
-      }
+          tableHeader: {
+            fillColor: "#4CAF50",
+            color: "white",
+          },
+        },
+      },
     };
+  }
+  toggleStory = (val) => {
+    let story = "";
+    if (val >= 0) {
+      story = this.state.contentdata[val].story;
+    }
+    console.log('st',story)
+    this.setState({
+      showStory: !this.state.showStory,
+      story,
+    });
+  };
+   createMarkup(v) {
+    return {__html: v};
   }
   componentDidMount() {
     fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-list")
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         const contentdata = [];
-        data.forEach(function(item, index) {
+        data.forEach(function (item, index) {
           contentdata.push(item.data);
         });
-        
-        this.setState({ contentdata , loading : false});
-        fetch("https://ganesan-cv-reactjs.netlify.app/.netlify/functions/cv-all")
-        .then(response => response.json())
-        .then(data1 => {
-          const cvdata = [];
-          data1.forEach(function(item1) {
-            cvdata.push(item1.data);
-          });
-          console.log(cvdata)
-          this.setState({ cvdata  });
-        });
+
+        this.setState({ contentdata, loading: false });
       });
   }
-  downloadPdf = e => {
-    pdfMake.createPdf(this.state.ocumentDefinition).download();
-  };
+
   render() {
     return (
       <div>
@@ -210,11 +232,27 @@ class App extends Component {
             </div>
           </div>
           <div class="container base">
-          {this.state.loading && <div class="text-center "> <div class="spinner"></div></div>}
-          {this.state.cvdata && <div class="text-center "> 
-          <a class="primary"  href="https://ganesankar.github.io/cv/media/GanesanKaruppaiya.pdf" target="_blank"> <i class="fas fa-cloud-download-alt"></i> DOWNLOAD PDF</a>
-          </div>}
-            <Card data={this.state.contentdata} />
+            {this.state.loading && (
+              <div class="text-center ">
+                {" "}
+                <div class="spinner"></div>
+              </div>
+            )}
+            {this.state.cvdata && (
+              <div class="text-center ">
+                <a
+                  class="primary"
+                  href="https://ganesankar.github.io/cv/media/GanesanKaruppaiya.pdf"
+                  target="_blank"
+                >
+                  <i class="las la-cloud-download-alt"></i> DOWNLOAD PDF
+                </a>
+              </div>
+            )}
+            <Card
+              data={this.state.contentdata}
+              toggleStory={this.toggleStory}
+            />
           </div>
           <div class="row">
             <div class="col-sm-6 text-left">
@@ -231,8 +269,11 @@ class App extends Component {
                 </div>
               </div>
             </div>
-    <div class="col-sm-6 text-right">&copy; {new Date().getFullYear()} Ganesan Karuppaiya </div>
+            <div class="col-sm-6 text-right">
+              &copy; {new Date().getFullYear()} Ganesan Karuppaiya{" "}
+            </div>
           </div>
+          <StoryBoard data={this.state.story} visible={this.state.showStory} toggleStory={this.toggleStory}/>
         </div>
       </div>
     );
