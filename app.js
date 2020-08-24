@@ -239,7 +239,7 @@ class App extends Component {
               </div>
             )}
             {this.state.cvdata && (
-              <div class="text-center ">
+              <div class="text-center m-5" >
                 <a
                   class="primary"
                   href="https://ganesankar.github.io/cv/media/GanesanKaruppaiya.pdf"
