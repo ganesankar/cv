@@ -2,11 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>
-      The Tharagai is not-for-profit Community to empower everyone with open
-      source. This github portal shares the listing of open source efforts from
-      the team
-    </title>
+    <title>Ganesan Karuppaiya : Resume PDF to Download</title>
     <style>
       body,
       html {
@@ -37,10 +33,16 @@
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.20/vfs_fonts.js"
     ></script>
-    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+      integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+      crossorigin="anonymous"
+    ></script>
     <script id="rendered-js">
+      function dates(s, e) {
+        return `${s ? moment(s, "YYYY-MM-DD").format("MMM YYYY") : ""} ${s ? ' - ' : ""}${e ? moment(e, "YYYY-MM-DD").format("MMM YYYY") : "Present"}`;
+      }
 
-dayjs().format()
       function sectionTitle(name) {
         return [
           "\n",
@@ -52,6 +54,8 @@ dayjs().format()
                   {
                     text: name.toUpperCase(),
                     style: "sectionHeader",
+
+                    tocItem: true,
                   },
                 ],
               ],
@@ -94,7 +98,10 @@ dayjs().format()
               [{ text: item.title }, { text: item.location }],
               [
                 { text: item.company, link: item.link },
-                { text: item.startdate + " " + item.enddate },
+                {
+                  text:
+                  dates(item.startdate,  item.enddate),
+                },
               ],
             ],
           },
@@ -131,7 +138,10 @@ dayjs().format()
               [{ text: item.title }, { text: item.location }],
               [
                 { text: item.institute },
-                { text: dayjs(item.enddate, "MM-DD-YYYY") + " " + item.enddate },
+                {
+                  text:
+                  dates(item.startdate,  item.enddate),
+                },
               ],
             ],
           },
@@ -152,7 +162,10 @@ dayjs().format()
                 [{ text: item.title }, { text: item.company }],
                 [
                   { text: item.size },
-                  { text: item.startdate + " " + item.enddate },
+                  {
+                  text:
+                  dates(item.startdate,  item.enddate),
+                },
                 ],
               ],
             ],
@@ -160,19 +173,18 @@ dayjs().format()
         };
         content.push(titleTable);
         content.push("\n");
-        
+
         content.push(item.desc);
         content.push("\n");
         const technology = [
-            { text: 'Technology Used', bold: true },
-            { text: item.content.join(", "), italics: true, color: "#000000" },
-          ];
+          { text: "Technology Used", bold: true },
+          { text: item.content.join(", "), italics: true, color: "#000000" },
+        ];
 
         content.push(technology);
         content.push("\n");
         return content;
       }
-
 
       function awardsList(item) {
         const content = [];
@@ -181,16 +193,15 @@ dayjs().format()
             headerRows: 1,
             widths: ["*", "auto"],
             body: [
-              [{ text: item.title }, { text: item.startdate + " " + item.enddate }],
               [
-                { text: item.institute },
-                { text: ''},
+                { text: item.title },
+                {
+                  text:
+                  dates(item.startdate,  item.enddate),
+                },
               ],
-              [
-                
-                { text: item.desc},
-                { text: ''}
-              ],
+              [{ text: item.institute }, { text: "" }],
+              [{ text: item.desc }, { text: "" }],
             ],
           },
         };
@@ -262,11 +273,17 @@ dayjs().format()
                 /// awards///
                 const awards = [sectionTitle(contentdata[8].title)];
                 contentdata[8].content.forEach(function (item, index) {
-                    awards.push(awardsList(item));
+                  awards.push(awardsList(item));
                 });
 
                 Data.todos.list = contentdata;
                 var documentDefinition = {
+                  info: {
+                    title: "Ganesan Karuppaiya Resume",
+                    author: "Ganesan Karuppaiya",
+                    subject: "",
+                    keywords: contentdata[0].subtitle,
+                  },
                   content: [
                     {
                       style: "tableExample",
