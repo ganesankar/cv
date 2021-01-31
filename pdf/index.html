@@ -21,26 +21,35 @@
         border: 0;
       }
     </style>
-  </head>
 
-  <body translate="no">
     <script src="https://unpkg.com/mithril"></script>
     <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.20/pdfmake.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"
+      integrity="sha512-HLbtvcctT6uyv5bExN/qekjQvFIl46bwjEq6PBvFogNfZ0YGVE+N3w6L+hGaJsGPWnMcAQ2qK8Itt43mGzGy8Q=="
+      crossorigin="anonymous"
     ></script>
     <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.20/vfs_fonts.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.min.js"
+      integrity="sha512-VIF8OqBWob/wmCvrcQs27IrQWwgr3g+iA4QQ4hH/YeuYBIoAUluiwr/NX5WQAQgUaVx39hs6l05cEOIGEB+dmA=="
+      crossorigin="anonymous"
     ></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
       integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
       crossorigin="anonymous"
     ></script>
+  </head>
+
+  <body translate="no">
     <script id="rendered-js">
+      const blue = "#00609b";
+      const bluelite = "#2973c0";
+      const greylite = "#f2f2f2";
+
       function dates(s, e) {
-        return `${s ? moment(s, "YYYY-MM-DD").format("MMM YYYY") : ""} ${s ? ' - ' : ""}${e ? moment(e, "YYYY-MM-DD").format("MMM YYYY") : "Present"}`;
+        return `${s ? moment(s, "YYYY-MM-DD").format("MMM YYYY") : ""} ${
+          s ? " - " : ""
+        }${e ? moment(e, "YYYY-MM-DD").format("MMM YYYY") : "Present"}`;
       }
 
       function sectionTitle(name) {
@@ -54,24 +63,35 @@
                   {
                     text: name.toUpperCase(),
                     style: "sectionHeader",
-
+                    bold: true,
                     tocItem: true,
+                    fontSize: 12,
                   },
                 ],
               ],
             },
+            layout: {
+              hLineWidth: function (i, node) {
+                return 0.5;
+              },
+              vLineWidth: function (i, node) {
+                return 0;
+              },
+              hLineColor: "gray",
+              vLineColor: "gray",
+            },
           },
+
           "\n",
         ];
       }
       function BlueTitle1(name) {
-        return { text: name, style: "title" };
+        return { text: name, color: bluelite, bold: true };
       }
 
       function expertiseList(list) {
         const pp = {
-          color: "#4954b8",
-          markerColor: "red",
+          markerColor: bluelite,
           ul: [],
         };
         list.forEach(function (item, index) {
@@ -79,10 +99,18 @@
           item.content.forEach(function (lister, index) {
             lists.push(lister.title);
           });
-          const p = [
-            { text: item.title, bold: true },
-            { text: lists.join(", "), italics: true, color: "#000000" },
-          ];
+
+          const p = {
+            text: [
+              {
+                text: item.title,
+                bold: true,
+              },
+              " : ",
+              { text: lists.join(", "), italics: true, color: "#000000" },
+            ],
+            margin: [10, 1, 1, 0],
+          };
           pp.ul.push(p);
         });
         return pp;
@@ -95,20 +123,38 @@
             headerRows: 1,
             widths: ["*", "auto"],
             body: [
-              [{ text: item.title }, { text: item.location }],
               [
-                { text: item.company, link: item.link },
-                {
-                  text:
-                  dates(item.startdate,  item.enddate),
-                },
+                [
+                  { text: item.title, bold: true, color: blue, fontSize: 12 },
+                  { text: item.company, link: item.link },
+                ],
+                [
+                  { text: item.location, alignment: "right" },
+                  {
+                    text: dates(item.startdate, item.enddate),
+                    alignment: "right",
+                    color: "grey",
+                  },
+                ],
               ],
             ],
           },
+          margin: [10, 1, 1, 0],
+          layout: {
+            hLineWidth: function (i, node) {
+              return i == 1 ? 0.5 : 0;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: "gray",
+            vLineColor: "gray",
+          },
         };
         const resp = {
-          markerColor: "red",
+          markerColor: bluelite,
           ul: [],
+          margin: [20, 1, 1, 0],
         };
         if (item.content.length > 0) {
           item.content.forEach(function (it) {
@@ -120,7 +166,10 @@
         content.push(titleTable);
         content.push("\n");
 
-        content.push(item.desc);
+        content.push({
+          text: item.desc,
+          margin: [10, 1, 1, 0],
+        });
         content.push("\n");
 
         content.push(resp);
@@ -128,83 +177,231 @@
         return content;
       }
 
-      function educationList(item) {
+      function educationList(items) {
         const content = [];
         const titleTable = {
           table: {
             headerRows: 1,
             widths: ["*", "auto"],
-            body: [
-              [{ text: item.title }, { text: item.location }],
-              [
-                { text: item.institute },
-                {
-                  text:
-                  dates(item.startdate,  item.enddate),
-                },
-              ],
-            ],
+            body: [],
+          },
+          margin: [10, 1, 1, 0],
+          layout: {
+            hLineWidth: function (i, node) {
+              return i > 0 && i < items.length ? 0.5 : 0;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: "gray",
+            vLineColor: "gray",
           },
         };
+        items.forEach(function (item) {
+          titleTable.table.body.push([
+            [
+              { text: item.title, bold: true, color: blue, fontSize: 12 },
+              { text: item.institute },
+            ],
+            [
+              { text: item.location, alignment: "right" },
+              {
+                text: dates(item.startdate, item.enddate),
+                alignment: "right",
+                color: "grey",
+              },
+            ],
+          ]);
+        });
         content.push(titleTable);
         content.push("\n");
 
         return content;
       }
-      function projectsList(item) {
+      function projectsList(items) {
         const content = [];
         const titleTable = {
+          margin: [10, 1, 1, 0],
           table: {
             headerRows: 1,
             widths: ["*", "auto"],
             body: [
               [
-                [{ text: item.title }, { text: item.company }],
-                [
-                  { text: item.size },
+                {
+                  margin: [10, 1, 1, 0],
+                  text: "",
+                  colSpan: 2,
+                },
+                {},
+              ],
+            ],
+          },
+          layout: {
+            hLineWidth: function (i, node) {
+              //console.log(i, node);
+              return (i + 2) % 3 == 1 ? 0.5 : 0;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: "gray",
+            vLineColor: "gray",
+          },
+        };
+        items.forEach(function (item) {
+          titleTable.table.body.push([
+            [
+              { text: item.title, bold: true, color: blue, fontSize: 12 },
+              { text: item.company },
+            ],
+            [
+              {
+                text: "Team : " + item.size,
+                alignment: "right",
+                color: blue,
+              },
+              {
+                text: dates(item.startdate, item.enddate),
+                alignment: "right",
+                color: "grey",
+              },
+            ],
+          ]);
+          titleTable.table.body.push([
+            {
+              margin: [10, 1, 1, 0],
+              text: item.desc,
+              colSpan: 2,
+            },
+            {},
+          ]);
+          titleTable.table.body.push([
+            {
+              margin: [10, 1, 1, 0],
+              text: [
+                {
+                  text: "Technology used : ",
+                  bold: true,
+                },
+                {
+                  text: item.content.join(", "),
+                  italics: true,
+                  color: "#000000",
+                },
+                "\n",
+                "\n",
+              ],
+              colSpan: 2,
+            },
+            {},
+          ]);
+        });
+        content.push(titleTable);
+
+        content.push("\n");
+        return content;
+      }
+
+      function awardsList(items) {
+        const content = [];
+        const titleTable = {
+          table: {
+            headerRows: 1,
+            widths: ["*", "auto"],
+            body: [],
+          },
+          margin: [10, 1, 1, 0],
+          layout: {
+            hLineWidth: function (i, node) {
+              //console.log(i, node);
+              return i > 0 && (i + 1) % 2 == 1 ? 0.5 : 0;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: "gray",
+            vLineColor: "gray",
+          },
+        };
+        items.forEach(function (item) {
+          titleTable.table.body.push([
+            [
+              {
+                margin: [0, 3, 1, 0],
+                text: [
                   {
-                  text:
-                  dates(item.startdate,  item.enddate),
-                },
+                    text: item.title,
+                    bold: true,
+                    color: blue,
+                    fontSize: 12,
+                  },
+                  {
+                    text: " (" + item.institute + ")",
+                    italics: true,
+                    color: "grey",
+                  },
                 ],
-              ],
+              },
             ],
-          },
-        };
+            [
+              { text: item.location, alignment: "right" },
+              {
+                text: dates(item.startdate, item.enddate),
+                alignment: "right",
+                color: "grey",
+              },
+            ],
+          ]);
+          titleTable.table.body.push([
+            {
+              margin: [10, 1, 1, 0],
+              text: item.desc,
+              color: "grey",
+              colSpan: 2,
+            },
+            {},
+          ]);
+        });
         content.push(titleTable);
         content.push("\n");
 
-        content.push(item.desc);
-        content.push("\n");
-        const technology = [
-          { text: "Technology Used", bold: true },
-          { text: item.content.join(", "), italics: true, color: "#000000" },
-        ];
-
-        content.push(technology);
-        content.push("\n");
         return content;
       }
 
-      function awardsList(item) {
+      function profileList(items, i2) {
         const content = [];
         const titleTable = {
           table: {
-            headerRows: 1,
-            widths: ["*", "auto"],
+            widths: [100, "*"],
             body: [
               [
-                { text: item.title },
-                {
-                  text:
-                  dates(item.startdate,  item.enddate),
-                },
+                " ",
+                " ",
               ],
-              [{ text: item.institute }, { text: "" }],
-              [{ text: item.desc }, { text: "" }],
             ],
           },
+          margin: [10, 1, 1, 0],
+          layout: {
+            hLineWidth: function (i, node) {
+              return 0;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: "gray",
+            vLineColor: "gray",
+          },
         };
+
+        items.forEach(function (item) {
+          if (["Blog", "GitHub", "linkedin", "twitter"].includes(item.title)) {
+            titleTable.table.body.push([
+              { text: item.title, color: bluelite },
+              { text: item.link, color: "gray" },
+            ]);
+          }
+        });
+
         content.push(titleTable);
         content.push("\n");
 
@@ -229,15 +426,31 @@
                 });
 
                 ////title////
+                const name = contentdata[0].title.split(" ");
                 const title = [
-                  { text: contentdata[0].title, style: "header" },
+                  {
+                    text: [
+                      {
+                        text: name[0],
+                        color: blue,
+                        bold: true,
+                        fontSize: 20,
+                      },
+                      " ",
+                      { text: name[1], fontSize: 20 },
+                    ],
+                  },
                   { text: contentdata[0].subtitle, style: "subtitle" },
                 ];
 
                 ////contacts////
                 const contacts = [];
                 contentdata[1].content.forEach(function (item, index) {
-                  contacts.push({ text: item.subtitle, link: item.link });
+                  contacts.push({
+                    text: item.subtitle,
+                    link: item.link,
+                    alignment: "right",
+                  });
                 });
                 ///summary///
                 const summary = {
@@ -250,6 +463,9 @@
                 contentdata[2].content.forEach(function (item, index) {
                   expertise.push(BlueTitle1(item.title));
                   expertise.push(expertiseList(item.content));
+                  if (index < contentdata[2].content.length) {
+                    expertise.push("\n");
+                  }
                 });
 
                 /// Experience///
@@ -260,21 +476,23 @@
 
                 /// education///
                 const education = [sectionTitle(contentdata[5].title)];
-                contentdata[5].content.forEach(function (item, index) {
-                  education.push(educationList(item));
-                });
+                education.push(educationList(contentdata[5].content));
 
                 /// projects///
                 const projects = [sectionTitle(contentdata[6].title)];
-                contentdata[6].content.forEach(function (item, index) {
-                  projects.push(projectsList(item));
-                });
+                projects.push(projectsList(contentdata[6].content));
 
                 /// awards///
                 const awards = [sectionTitle(contentdata[8].title)];
-                contentdata[8].content.forEach(function (item, index) {
-                  awards.push(awardsList(item));
-                });
+                awards.push(awardsList(contentdata[8].content));
+
+                /// profile ///
+                const profile = [sectionTitle("Profile")];
+                const array3 = [
+                  ...contentdata[9].content,
+                  ...contentdata[10].content,
+                ];
+                profile.push(profileList(array3));
 
                 Data.todos.list = contentdata;
                 var documentDefinition = {
@@ -284,6 +502,7 @@
                     subject: "",
                     keywords: contentdata[0].subtitle,
                   },
+
                   content: [
                     {
                       style: "tableExample",
@@ -291,19 +510,38 @@
                         widths: ["*", "auto"],
                         body: [[title, contacts]],
                       },
+                      layout: {
+                        hLineWidth: function (i, node) {
+                          return i == 1 ? 0.5 : 0;
+                        },
+                        vLineWidth: function (i, node) {
+                          return 0;
+                        },
+                        hLineColor: function (i, node) {
+                          return "gray";
+                        },
+                        vLineColor: function (i, node) {
+                          return "gray";
+                        },
+                      },
                     },
+                    "\n",
                     summary,
                     expertise,
                     experience,
                     education,
                     projects,
                     awards,
+                    profile,
                     {
                       text: "pdfmake",
                       style: "header",
                     },
                   ],
-
+                  defaultStyle: {
+                    fontSize: 10,
+                    lineHeight: 1.2,
+                  },
                   styles: {
                     header: {
                       fontSize: 18,
